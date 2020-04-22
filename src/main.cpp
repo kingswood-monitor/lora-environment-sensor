@@ -18,10 +18,14 @@ uint16_t packet_id = 0;
 
 void setup()
 {
+  // This sets the device_id in flash memory.
+  // Device will appear to hang - uncomment, flash, recomment, then restart.
+  // set_device_id(2);
+
   if (init_device())
     Serial.println("Device started [OK]");
 
-  if (init_radio(CLIENT_ADDRESS))
+  if (init_radio())
     Serial.println("Radio started  [OK]");
 
   if (init_sensors())
