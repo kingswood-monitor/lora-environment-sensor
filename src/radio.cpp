@@ -2,20 +2,22 @@
 #include <RH_RF95.h>
 
 #include "radio.h"
+#include "util.h"
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
 RHReliableDatagram manager(driver, CLIENT_ADDRESS);
 
 // Dont put this on the stack:
-uint8_t ack_buf[3]; // holds 'OK'
+uint8_t ok[3] = "OK";
+uint8_t ok_len = 3;
 
-bool init_radio()
+bool init_radio(uint8_t client_address)
 {
     // has_lora = true; // TODO get radio status
     return manager.init();
 }
 
-bool send_packet(uint16_t packet_id, uint8_t *buffer, int bytes, int server_address)
+bool send_packet(uint16_t packet_id, uint8_t *buffer, uint8_t bytes, uint8_t server_address)
 {
     if (manager.sendtoWait(buffer, bytes, server_address))
     {
@@ -29,12 +31,9 @@ bool send_packet(uint16_t packet_id, uint8_t *buffer, int bytes, int server_addr
 
         digitalWrite(LED_BUILTIN, HIGH);
 
-        // Now wait for a reply from the server
-        uint8_t len = sizeof(ack_buf);
-        uint8_t from;
-        if (manager.recvfromAckTimeout(ack_buf, &len, 2000, &from))
+        if (manager.recvfromAckTimeout(ok, &ok_len, 2000))
         {
-            Serial.println((char *)ack_buf);
+            Serial.println((char *)ok);
             digitalWrite(LED_BUILTIN, LOW);
             return true;
         }

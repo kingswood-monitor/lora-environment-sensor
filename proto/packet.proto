@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+enum DeviceType {
+   UnknownDevice = 0;
+   EnvironmentSensor = 1;
+   EnergySensor = 2;
+}
+
+enum Sensor {
+   UnknownSensor = 0;
+   HDC1080 = 1;
+   SDC30 = 2;
+   VEML7700 = 3;
+   BMP388 = 4;
+   LORA = 5;
+   BATTERY = 6;
+}
+
+message Measurement {
+   Sensor sensor = 1;
+   oneof type {
+      float temperature = 2;
+      float humidity = 3;
+      float pressure = 4;
+      float co2 = 5;
+      float light = 6;
+      float power = 7;
+      bool boiler_on = 8;
+      
+      // DEVICE STATUS
+      float voltage = 20;
+
+      // LORA
+      float rssi = 30;
+      float frequency_error = 31;
+      float snr = 32;
+   }
+}
+
+message Meta {
+   int32 device_id = 1; // 2 = 'outside', 3 = 'greenhouse'
+   DeviceType device_type = 2;
+   reserved 3;
+   reserved 4;
+}
+
+message Packet {
+   int32 packet_id = 1;
+   Meta meta = 2;
+   repeated Measurement measurements = 3;
+}  
