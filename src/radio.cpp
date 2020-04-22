@@ -2,7 +2,7 @@
 #include <RH_RF95.h>
 
 #include "radio.h"
-#include "util.h"
+#include "config.h"
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
 RHReliableDatagram manager(driver, CLIENT_ADDRESS);

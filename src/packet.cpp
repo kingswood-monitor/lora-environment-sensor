@@ -1,20 +1,16 @@
 #include <Arduino.h>
-#include <pb_encode.h>
 #include <ClosedCube_HDC1080.h>
 #include <VEML7700.h>
 #include <DFRobot_BMP388_I2C.h>
+
+#include <pb_encode.h>
 #include "packet.pb.h"
 
-#include "util.h"
+#include "config.h"
 #include "packet.h"
 
 #define VBATPIN A9
 #define HAS_BATTERY true
-
-const Meta META = {
-    device_id : CLIENT_ADDRESS,
-    device_type : DeviceType_EnvironmentSensor,
-};
 
 ClosedCube_HDC1080 hdc1080;
 VEML7700 veml;
@@ -24,6 +20,11 @@ bool has_hdc1080 = false;
 bool has_veml7700 = false;
 bool has_bmp388 = false;
 bool has_lora = true;
+
+const Meta META = {
+    device_id : CLIENT_ADDRESS,
+    device_type : DEVICE_TYPE,
+};
 
 bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg);
 
