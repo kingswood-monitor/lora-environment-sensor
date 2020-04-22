@@ -22,9 +22,10 @@ extern RHReliableDatagram manager;
 extern ClosedCube_HDC1080 hdc1080;
 extern VEML7700 veml;
 extern DFRobot_BMP388_I2C bmp388;
-extern bool has_dhc1080;
+extern bool has_hdc1080;
 extern bool has_veml7700;
 extern bool has_bmp388;
+extern bool has_lora;
 
 /*******************************************************
  * Protobuf                                           */
@@ -130,8 +131,10 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 {
   Measurement measurement = Measurement_init_default;
 
-  if (has_dhc1080)
+  if (has_hdc1080)
   {
+    measurement.sensor = Sensor_HDC1080;
+
     measurement.which_type = Measurement_temperature_tag;
     measurement.type.temperature = hdc1080.readTemperature();
     if (!send_data(&measurement, ostream, field))
@@ -144,6 +147,8 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
   }
   if (has_veml7700)
   {
+    measurement.sensor = Sensor_VEML7700;
+
     float lux;
     veml.getALSLux(lux);
     measurement.which_type = Measurement_light_tag;
@@ -153,6 +158,8 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
   }
   if (has_bmp388)
   {
+    measurement.sensor = Sensor_BMP388;
+
     measurement.which_type = Measurement_pressure_tag;
     measurement.type.pressure = bmp388.readPressure() / 100;
     if (!send_data(&measurement, ostream, field))
@@ -166,8 +173,32 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
   if (HAS_BATTERY)
   {
+    measurement.sensor = Sensor_BATTERY;
+
     measurement.which_type = Measurement_voltage_tag;
     measurement.type.voltage = read_battery();
+    if (!send_data(&measurement, ostream, field))
+      return false;
+  }
+
+  if (has_lora)
+  {
+    Serial.println("saving lora");
+
+    measurement.sensor = Sensor_LORA;
+
+    measurement.which_type = Measurement_rssi_tag;
+    measurement.type.rssi = 0;
+    if (!send_data(&measurement, ostream, field))
+      return false;
+
+    measurement.which_type = Measurement_snr_tag;
+    measurement.type.snr = 0;
+    if (!send_data(&measurement, ostream, field))
+      return false;
+
+    measurement.which_type = Measurement_frequency_error_tag;
+    measurement.type.frequency_error = 0;
     if (!send_data(&measurement, ostream, field))
       return false;
   }

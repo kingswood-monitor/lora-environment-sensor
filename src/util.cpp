@@ -10,9 +10,10 @@ ClosedCube_HDC1080 hdc1080;
 VEML7700 veml;
 DFRobot_BMP388_I2C bmp388;
 
-bool has_dhc1080;
+bool has_hdc1080;
 bool has_veml7700;
 bool has_bmp388;
+bool has_lora;
 
 /*******************************************************
  * Initialisers                                       */
@@ -32,6 +33,7 @@ bool init_device()
 
 bool init_radio()
 {
+    has_lora = true; // TODO get radio status
     return manager.init();
 }
 
@@ -40,7 +42,7 @@ bool init_radio()
 
 bool init_sensors()
 {
-    if (has_dhc1080 = init_dhc1080())
+    if (has_hdc1080 = init_dhc1080())
         Serial.println("DHC1080 [OK]");
     if (has_veml7700 = init_veml7700())
         Serial.println("VEML7700 [OK]");
