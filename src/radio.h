@@ -6,4 +6,9 @@
 #define RFM95_INT 7
 
 bool init_radio(uint8_t client_address);
+bool has_radio();
+int16_t rssi();
+int snr();
+int frequency_error();
+
 bool send_packet(uint16_t packet_id, uint8_t *buffer, uint8_t bytes, uint8_t server_address);

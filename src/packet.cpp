@@ -8,6 +8,7 @@
 
 #include "config.h"
 #include "packet.h"
+#include "radio.h"
 
 #define VBATPIN A9
 #define HAS_BATTERY true
@@ -19,7 +20,7 @@ DFRobot_BMP388_I2C bmp388;
 bool has_hdc1080 = false;
 bool has_veml7700 = false;
 bool has_bmp388 = false;
-bool has_lora = true;
+bool has_lora = false;
 
 const Meta META = {
     device_id : CLIENT_ADDRESS,
@@ -55,6 +56,8 @@ bool init_sensors()
         Serial.println("VEML7700 [OK]");
     if (has_bmp388 = init_bmp388())
         Serial.println("BMP388 [OK]");
+    if (has_lora = has_radio())
+        Serial.println("Radio [OK]");
 
     return true;
 }
@@ -157,17 +160,17 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
         measurement.sensor = Sensor_LORA;
 
         measurement.which_type = Measurement_rssi_tag;
-        measurement.type.rssi = 0;
+        measurement.type.rssi = rssi();
         if (!send_data(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_snr_tag;
-        measurement.type.snr = 0;
+        measurement.type.snr = snr();
         if (!send_data(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_frequency_error_tag;
-        measurement.type.frequency_error = 0;
+        measurement.type.frequency_error = frequency_error();
         if (!send_data(&measurement, ostream, field))
             return false;
     }
