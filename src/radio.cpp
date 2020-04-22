@@ -17,6 +17,26 @@ bool init_radio(uint8_t client_address)
     return manager.init();
 }
 
+bool has_radio()
+{
+    return manager.init();
+}
+
+int16_t rssi()
+{
+    return driver.lastRssi();
+}
+
+int snr()
+{
+    return driver.lastSNR();
+}
+
+int frequency_error()
+{
+    return driver.frequencyError();
+}
+
 bool send_packet(uint16_t packet_id, uint8_t *buffer, uint8_t bytes, uint8_t server_address)
 {
     if (manager.sendtoWait(buffer, bytes, server_address))
