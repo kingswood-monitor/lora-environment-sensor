@@ -32,7 +32,7 @@ extern bool has_bmp388;
 #define MAX_PROTOBUF_BYTES 100
 const Meta META = {
   device_id : CLIENT_ADDRESS,
-  {device_type : DEVICE_TYPE},
+  device_type : DeviceType_EnvironmentSensor,
 };
 
 // Packet ID
@@ -71,10 +71,6 @@ void loop()
   packet.packet_id = packet_id++;
   packet.has_meta = true;
   packet.meta = META;
-  if (HAS_BATTERY)
-  {
-    packet.meta.voltage = read_battery();
-  }
   packet.measurements.funcs.encode = write_readings;
 
   // Encode the proto buffer
@@ -164,6 +160,14 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
     measurement.which_type = Measurement_temperature_tag;
     measurement.type.temperature = bmp388.readTemperature();
+    if (!send_data(&measurement, ostream, field))
+      return false;
+  }
+
+  if (HAS_BATTERY)
+  {
+    measurement.which_type = Measurement_voltage_tag;
+    measurement.type.voltage = read_battery();
     if (!send_data(&measurement, ostream, field))
       return false;
   }

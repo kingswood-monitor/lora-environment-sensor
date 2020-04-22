@@ -13,7 +13,6 @@
 // Device configuration
 #define SERVER_ADDRESS 0
 #define CLIENT_ADDRESS 1
-#define DEVICE_TYPE "test_environment_sensor"
 #define HAS_BATTERY true
 #define VBATPIN A9
 
