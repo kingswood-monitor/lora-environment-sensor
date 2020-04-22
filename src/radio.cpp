@@ -3,17 +3,28 @@
 
 #include "radio.h"
 #include "config.h"
+#include "IdGuard.h"
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
-RHReliableDatagram manager(driver, CLIENT_ADDRESS);
+RHReliableDatagram manager(driver, IdGuard.readId());
 
 // Dont put this on the stack:
 uint8_t ok[3] = "OK";
 uint8_t ok_len = 3;
 
-bool init_radio(uint8_t client_address)
+void set_device_id(int device_id)
 {
-    // has_lora = true; // TODO get radio status
+    IdGuard.writeIdAndRestartDevice(device_id);
+    Serial.print("Device is set to: ");
+    Serial.println(device_id);
+    Serial.println("Comment out enabling line in setup()");
+}
+
+bool init_radio()
+{
+    // client_address = IdGuard.readId();
+    Serial.print("Client ID: ");
+    // Serial.println(client_address);
     return manager.init();
 }
 
