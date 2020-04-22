@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+message Measurement {
+   oneof type {
+      float temperature = 1;
+      float humidity = 2;
+      float pressure = 3;
+      float co2 = 4;
+      float light = 5;
+      float power = 6;
+      bool boiler_on = 7;
+   }
+}
+
+message Lora {
+   float rssi = 1;
+   float frequency_error = 2;
+   float snr = 3;
+}
+
+message Meta {
+   int32 device_id = 1; // 2 = 'outside', 3 = 'greenhouse'
+   string device_type = 2; // e.g. "environment_sensor"
+   float voltage = 3;
+   Lora lora = 4;
+}
+
+message Packet {
+   int32 packet_id = 1;
+   Meta meta = 2;
+   repeated Measurement measurements = 3;
+}  
