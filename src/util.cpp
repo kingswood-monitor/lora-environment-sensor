@@ -1,10 +1,6 @@
 #include <Arduino.h>
 #include "util.h"
 
-// LoRa
-RH_RF95 driver(RFM95_CS, RFM95_INT);
-RHReliableDatagram manager(driver, CLIENT_ADDRESS);
-
 // Sensors
 ClosedCube_HDC1080 hdc1080;
 VEML7700 veml;
@@ -29,12 +25,6 @@ bool init_device()
     Serial.println("** Environment Sensor");
 
     return true;
-}
-
-bool init_radio()
-{
-    has_lora = true; // TODO get radio status
-    return manager.init();
 }
 
 /*******************************************************

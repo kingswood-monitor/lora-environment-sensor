@@ -10,11 +10,7 @@
 
 #include "packet.pb.h"
 #include "util.h"
-
-/*******************************************************
- * Radiohead                                          */
-
-extern RHReliableDatagram manager;
+#include "radio.h"
 
 /*******************************************************
 * Sensors                                             */
@@ -50,9 +46,6 @@ void setup()
   if (init_radio())
     Serial.println("Radio started  [OK]");
 
-  if (!manager.init())
-    Serial.println("init failed");
-
   if (init_sensors())
   {
     Serial.println("Sensors started [OK]");
@@ -61,8 +54,6 @@ void setup()
 
 // uint8_t data[] = "Hello World!";
 uint8_t buffer[MAX_PROTOBUF_BYTES];
-// Dont put this on the stack:
-uint8_t ack_buf[3]; // holds 'OK'
 
 void loop()
 {
@@ -83,36 +74,7 @@ void loop()
   }
 
   // Transmit the packet
-  if (manager.sendtoWait(buffer, ostream.bytes_written, SERVER_ADDRESS))
-  {
-    Serial.print(F("["));
-    Serial.print(packet.packet_id);
-    Serial.print(F("->0x"));
-    Serial.print(SERVER_ADDRESS, HEX);
-    Serial.print(F("] "));
-    Serial.print(ostream.bytes_written);
-    Serial.print(F(" bytes <- "));
-
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    // Now wait for a reply from the server
-    uint8_t len = sizeof(ack_buf);
-    uint8_t from;
-    if (manager.recvfromAckTimeout(ack_buf, &len, 2000, &from))
-    {
-      Serial.println((char *)ack_buf);
-      digitalWrite(LED_BUILTIN, LOW);
-    }
-    else
-    {
-      Serial.println(F("[FAIL] No reply, is server running?"));
-    }
-  }
-  else
-  {
-    Serial.print(F("[FAIL] SendtoWait: Server 0x"));
-    Serial.println(SERVER_ADDRESS);
-  }
+  send_packet(packet.packet_id, buffer, ostream.bytes_written, SERVER_ADDRESS);
 
   delay(REFRESH_MILLIS);
 }
