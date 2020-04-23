@@ -24,8 +24,8 @@ message Measurement {
       float pressure = 4;
       float co2 = 5;
       float light = 6;
-      float power = 7;
-      bool boiler_on = 8;
+      float electricity = 7;
+      bool gas = 8;
       
       // DEVICE STATUS
       float voltage = 20;
