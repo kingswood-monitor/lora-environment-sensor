@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-enum DeviceType {
-   UnknownDevice = 0;
-   EnvironmentSensor = 1;
-   EnergySensor = 2;
+enum SensorType {
+   UnknownType = 0;
+   Environment = 1; 
+   Energy = 2;
 }
 
 enum Sensor {
@@ -38,10 +38,11 @@ message Measurement {
 }
 
 message Meta {
-   int32 device_id = 1; // 2 = 'outside', 3 = 'greenhouse'
-   DeviceType device_type = 2;
+   int32 location_id = 1; // 2 = 'outside', 3 = 'greenhouse'
+   SensorType sensor_type = 2;
    reserved 3;
    reserved 4;
+   string firmware_version = 5;
 }
 
 message Packet {
