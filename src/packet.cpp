@@ -156,8 +156,6 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
     if (has_lora)
     {
-        Serial.println("saving lora");
-
         measurement.sensor = Sensor_LORA;
 
         measurement.which_type = Measurement_rssi_tag;
