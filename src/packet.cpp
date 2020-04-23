@@ -23,8 +23,9 @@ bool has_bmp388 = false;
 bool has_lora = false;
 
 const Meta META = {
-    device_id : CLIENT_ADDRESS,
-    device_type : DEVICE_TYPE,
+    location_id : LOCATION_ID,
+    sensor_type : SENSOR_TYPE,
+    firmware_version : FIRMWARE_VERSION,
 };
 
 bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg);
