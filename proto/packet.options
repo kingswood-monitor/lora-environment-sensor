@@ -1,1 +1,2 @@
-Meta.firmware_version         max_size:6
+Meta.firmware_version  max_size:6
+Meta.chip_id           max_size:8

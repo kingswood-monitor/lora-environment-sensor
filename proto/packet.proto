@@ -43,6 +43,7 @@ message Meta {
    reserved 3;
    reserved 4;
    string firmware_version = 5;
+   string chip_id = 6;
 }
 
 message Packet {
