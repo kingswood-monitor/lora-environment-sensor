@@ -9,10 +9,11 @@
 #include "packet.pb.h"
 
 #include "config.h"
+#include "util.h"
 #include "sensors.h"
 #include "radio.h"
 
-#define MAX_PROTOBUF_BYTES 120
+#define MAX_PROTOBUF_BYTES 115
 
 #define VBATPIN A9
 #define HAS_BATTERY true
@@ -125,6 +126,17 @@ bool encode_measurements(pb_ostream_t *ostream, const pb_field_iter_t *field, vo
 
         measurement.which_type = Measurement_humidity_tag;
         measurement.type.humidity = hdc1080.readHumidity();
+        if (!encode_field(&measurement, ostream, field))
+            return false;
+
+        // Calculate dewpoint and attach to the virtual sensor f
+        float temp_c = hdc1080.readTemperature();
+        float relative_humidity = hdc1080.readHumidity();
+        float dew_point_c = dew_point(temp_c, relative_humidity);
+
+        measurement.sensor = Sensor_VIRTUAL;
+        measurement.which_type = Measurement_dewpoint_tag;
+        measurement.type.dewpoint = dew_point_c;
         if (!encode_field(&measurement, ostream, field))
             return false;
     }
