@@ -23,7 +23,7 @@ bool has_bmp388 = false;
 bool has_lora = false;
 
 const Meta META = {
-    location_id : LOCATION_ID,
+    location : CFG_LOCATION,
     sensor_type : SENSOR_TYPE,
     firmware_version : FIRMWARE_VERSION,
 };

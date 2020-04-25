@@ -6,8 +6,8 @@
 #define REFRESH_MILLIS 1000 // sensor refresh rate (milliseconds)
 
 // Sensor type
-#define SENSOR_TYPE SensorType_Environment
+#define SENSOR_TYPE SensorType_environment
 
 // Logical addresses on the network
 #define SERVER_ADDRESS 0
-#define LOCATION_ID 2 // 2:outdoors, 3:greenhouse
+#define CFG_LOCATION Location_greenhouse
