@@ -19,11 +19,11 @@ void setup()
   if (init_device())
     Serial.println("Device started [OK]");
 
-  if (init_radio())
-    Serial.println("Radio started  [OK]");
-
   if (init_sensors())
     Serial.println("Sensors started [OK]");
+
+  if (init_radio())
+    Serial.println("Radio started  [OK]");
 }
 
 // Packet ID

@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+#include "config.h"
 #include "util.h"
 
 bool init_device()
@@ -9,7 +11,9 @@ bool init_device()
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    Serial.println("** Environment Sensor");
+    Serial.print(F("** Environment Sensor v."));
+    Serial.println(FIRMWARE_VERSION);
+    Serial.println();
 
     return true;
 }
