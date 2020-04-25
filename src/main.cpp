@@ -7,6 +7,7 @@
 */
 
 #include <Arduino.h>
+#include <Adafruit_SleepyDog.h>
 
 #include "sensors.h"
 #include "radio.h"
@@ -36,4 +37,5 @@ void loop()
   send_measurement(packet_id, packet_buffer, bytes_written);
 
   delay(CFG_REFRESH_MILLIS);
+  // int sleepMS = Watchdog.sleep(CFG_REFRESH_MILLIS);
 }
