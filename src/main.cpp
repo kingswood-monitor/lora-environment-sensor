@@ -8,20 +8,14 @@
 
 #include <Arduino.h>
 
-#include "util.h"
-#include "radio.h"
 #include "packet.h"
-#include "config.h"
+#include "radio.h"
 
-// Packet ID
-uint16_t packet_id = 0;
+#include "config.h"
+#include "util.h"
 
 void setup()
 {
-  // This sets the device_id in flash memory.
-  // Device will appear to hang - uncomment, flash, recomment, then restart.
-  // set_device_id(2);
-
   if (init_device())
     Serial.println("Device started [OK]");
 
@@ -32,12 +26,14 @@ void setup()
     Serial.println("Sensors started [OK]");
 }
 
+// Packet ID
+uint16_t packet_id = 0;
+uint8_t packet_buffer[255];
+
 void loop()
 {
-  uint8_t packet[255];
-  uint8_t bytes_written = build_packet(packet_id++, packet, 255);
-
-  send_packet(packet_id, packet, bytes_written, SERVER_ADDRESS);
+  uint8_t bytes_written = build_packet(packet_id++, packet_buffer, 255);
+  send_packet(packet_id, packet_buffer, bytes_written, SERVER_ADDRESS);
 
   delay(REFRESH_MILLIS);
 }
