@@ -16,6 +16,7 @@ enum Sensor {
    BMP388 = 4;
    LORA = 5;
    BATTERY = 6;
+   VIRTUAL = 20;
 }
 
 enum Location {
@@ -41,11 +42,14 @@ message Measurement {
       
       // DEVICE STATUS
       float voltage = 20;
-
+      
       // LORA
       float rssi = 30;
       float frequency_error = 31;
       float snr = 32;
+
+      // Calculated and virtual measurements
+      float dewpoint = 40;
    }
 }
 

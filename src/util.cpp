@@ -25,20 +25,8 @@ bool init_device()
     return true;
 }
 
-void get_set_config()
+float dew_point(float temp_c, float rel_hum)
 {
-#ifdef WRITE_LOCATION_ID_TO_EEPROM
-    IdGuard.error_led_pin = LED_BUILTIN;
-    IdGuard.writeIdAndRestartDevice((int)CFG_LOCATION);
-    location = CFG_LOCATION;
-
-    Serial.println(F("INFO: Wrote settings to EEPROM"));
-    Serial.println(F("INFO: Remember to comment WRITE_LOCATION_ID_TO_EEPROM in util.h"));
-#else
-    location = (Location)IdGuard.readId();
-
-    Serial.println(F("INFO: Loaded configuration from EEPROM"));
-#endif
-    Serial.print(F("INFO: LOCATION_ID: "));
-    Serial.println(location);
+    float ans = (temp_c - (14.55 + 0.114 * temp_c) * (1 - (0.01 * rel_hum)) - pow(((2.5 + 0.007 * temp_c) * (1 - (0.01 * rel_hum))), 3) - (15.9 + 0.117 * temp_c) * pow((1 - (0.01 * rel_hum)), 14));
+    return ans;
 }
