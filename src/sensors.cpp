@@ -1,3 +1,5 @@
+
+
 #include <Arduino.h>
 #include <ClosedCube_HDC1080.h>
 #include <VEML7700.h>
@@ -7,7 +9,7 @@
 #include "packet.pb.h"
 
 #include "config.h"
-#include "packet.h"
+#include "sensors.h"
 #include "radio.h"
 
 #define VBATPIN A9
@@ -17,20 +19,44 @@ ClosedCube_HDC1080 hdc1080;
 VEML7700 veml;
 DFRobot_BMP388_I2C bmp388;
 
-bool has_hdc1080 = false;
-bool has_veml7700 = false;
-bool has_bmp388 = false;
-bool has_lora = false;
-
 const Meta META = {
     location : CFG_LOCATION,
     sensor_type : SENSOR_TYPE,
     firmware_version : FIRMWARE_VERSION,
 };
 
+bool has_hdc1080 = false;
+bool has_veml7700 = false;
+bool has_bmp388 = false;
+bool has_lora = false;
+
+bool init_hdc1080();
+bool init_veml7700();
+bool init_bmp388();
 bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg);
 
-bool init_dhc1080()
+bool init_sensors()
+{
+    has_hdc1080 = init_hdc1080();
+    if (has_hdc1080)
+        Serial.println("[OK] Sensor HDC1080");
+
+    has_veml7700 = init_veml7700();
+    if (has_veml7700)
+        Serial.println("[OK] Sensor VEML7700");
+
+    has_bmp388 = init_bmp388();
+    if (has_bmp388)
+        Serial.println("[OK] Sensor BMP388");
+
+    has_lora = has_radio();
+    if (has_lora)
+        Serial.println("[OK] Sensor LoRa radio");
+
+    return true;
+}
+
+bool init_hdc1080()
 {
     hdc1080.begin(0x40);
     return (hdc1080.readDeviceId() == 4176);
@@ -47,20 +73,6 @@ bool init_bmp388()
 {
     bmp388.begin();
     return (!((bmp388.readTemperature() == 0) & (bmp388.readPressure() == 0)));
-}
-
-bool init_sensors()
-{
-    if (has_hdc1080 = init_dhc1080())
-        Serial.println("DHC1080 [OK]");
-    if (has_veml7700 = init_veml7700())
-        Serial.println("VEML7700 [OK]");
-    if (has_bmp388 = init_bmp388())
-        Serial.println("BMP388 [OK]");
-    if (has_lora = has_radio())
-        Serial.println("Radio [OK]");
-
-    return true;
 }
 
 float read_battery()
@@ -83,7 +95,7 @@ uint8_t build_packet(int packet_id, uint8_t *buffer, uint8_t buffer_size)
     packet.measurements.funcs.encode = write_readings;
 
     // Encode the proto buffer
-    pb_ostream_t ostream = pb_ostream_from_buffer(buffer, 100);
+    pb_ostream_t ostream = pb_ostream_from_buffer(buffer, MAX_PROTOBUF_BYTES);
     if (!pb_encode(&ostream, Packet_fields, &packet))
     {
         Serial.println("Encoding Error");
