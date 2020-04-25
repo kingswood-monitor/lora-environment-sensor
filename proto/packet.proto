@@ -1,9 +1,11 @@
 syntax = "proto3";
 
+
+
 enum SensorType {
    UnknownType = 0;
-   Environment = 1; 
-   Energy = 2;
+   environment = 1; 
+   energy = 2;
 }
 
 enum Sensor {
@@ -14,6 +16,16 @@ enum Sensor {
    BMP388 = 4;
    LORA = 5;
    BATTERY = 6;
+}
+
+enum Location {
+   unknownLocation = 0;
+   outdoor = 2;
+   greenhouse = 3;
+   lounge = 4;
+   bedroom = 5;
+   gas = 20;
+   electricity = 21;
 }
 
 message Measurement {
@@ -38,7 +50,7 @@ message Measurement {
 }
 
 message Meta {
-   int32 location_id = 1; // 2 = 'outside', 3 = 'greenhouse'
+   Location location = 1; 
    SensorType sensor_type = 2;
    reserved 3;
    reserved 4;
