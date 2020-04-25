@@ -12,6 +12,8 @@
 #include "sensors.h"
 #include "radio.h"
 
+#define MAX_PROTOBUF_BYTES 120
+
 #define VBATPIN A9
 #define HAS_BATTERY true
 
@@ -33,7 +35,9 @@ bool has_lora = false;
 bool init_hdc1080();
 bool init_veml7700();
 bool init_bmp388();
-bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg);
+
+bool encode_measurements(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg);
+bool encode_field(Measurement *m, pb_ostream_t *ostream, const pb_field_iter_t *field);
 
 bool init_sensors()
 {
@@ -84,7 +88,7 @@ float read_battery()
     return measuredvbat;
 }
 
-uint8_t build_packet(int packet_id, uint8_t *buffer, uint8_t buffer_size)
+uint8_t read_and_encode_sensors(int packet_id, uint8_t *buffer, uint8_t buffer_size)
 {
     Packet packet = Packet_init_zero;
 
@@ -92,7 +96,7 @@ uint8_t build_packet(int packet_id, uint8_t *buffer, uint8_t buffer_size)
     packet.packet_id = packet_id;
     packet.has_meta = true;
     packet.meta = META;
-    packet.measurements.funcs.encode = write_readings;
+    packet.measurements.funcs.encode = encode_measurements;
 
     // Encode the proto buffer
     pb_ostream_t ostream = pb_ostream_from_buffer(buffer, MAX_PROTOBUF_BYTES);
@@ -106,13 +110,7 @@ uint8_t build_packet(int packet_id, uint8_t *buffer, uint8_t buffer_size)
     return ostream.bytes_written;
 }
 
-bool send_data(Measurement *m, pb_ostream_t *ostream, const pb_field_iter_t *field)
-{
-    return pb_encode_tag_for_field(ostream, field) &&
-           pb_encode_submessage(ostream, Measurement_fields, m);
-}
-
-bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg)
+bool encode_measurements(pb_ostream_t *ostream, const pb_field_iter_t *field, void *const *arg)
 {
     Measurement measurement = Measurement_init_default;
 
@@ -122,12 +120,12 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
         measurement.which_type = Measurement_temperature_tag;
         measurement.type.temperature = hdc1080.readTemperature();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_humidity_tag;
         measurement.type.humidity = hdc1080.readHumidity();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
     }
     if (has_veml7700)
@@ -138,7 +136,7 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
         veml.getALSLux(lux);
         measurement.which_type = Measurement_light_tag;
         measurement.type.light = lux;
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
     }
     if (has_bmp388)
@@ -147,12 +145,12 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
         measurement.which_type = Measurement_pressure_tag;
         measurement.type.pressure = bmp388.readPressure() / 100;
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_temperature_tag;
         measurement.type.temperature = bmp388.readTemperature();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
     }
 
@@ -162,7 +160,7 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
         measurement.which_type = Measurement_voltage_tag;
         measurement.type.voltage = read_battery();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
     }
 
@@ -172,19 +170,25 @@ bool write_readings(pb_ostream_t *ostream, const pb_field_iter_t *field, void *c
 
         measurement.which_type = Measurement_rssi_tag;
         measurement.type.rssi = rssi();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_snr_tag;
         measurement.type.snr = snr();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
 
         measurement.which_type = Measurement_frequency_error_tag;
         measurement.type.frequency_error = frequency_error();
-        if (!send_data(&measurement, ostream, field))
+        if (!encode_field(&measurement, ostream, field))
             return false;
     }
 
     return true;
+}
+
+bool encode_field(Measurement *m, pb_ostream_t *ostream, const pb_field_iter_t *field)
+{
+    return pb_encode_tag_for_field(ostream, field) &&
+           pb_encode_submessage(ostream, Measurement_fields, m);
 }
