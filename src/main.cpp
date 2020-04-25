@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 
-#include "packet.h"
+#include "sensors.h"
 #include "radio.h"
 
 #include "config.h"

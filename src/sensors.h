@@ -1,4 +1,8 @@
-#include "packet.pb.h"
+/**
+ * sensors.h
+ *
+ * Read sensors and encode data in Protobuf
+ */
 
 #define MAX_PROTOBUF_BYTES 120
 
