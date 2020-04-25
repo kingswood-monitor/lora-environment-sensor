@@ -3,7 +3,6 @@
 
 #include "radio.h"
 #include "config.h"
-// #include "IdGuard.h"
 
 // feather32u4 LoRa pin assignments
 #define RFM95_CS 8
@@ -23,17 +22,8 @@ void set_device_id(int device_id);
 uint8_t ok[3] = "OK";
 uint8_t ok_len = 3;
 
-// void set_device_id(int device_id)
-// {
-//     IdGuard.writeIdAndRestartDevice(device_id);
-//     Serial.print("Device is set to: ");
-//     Serial.println(device_id);
-//     Serial.println("Comment out enabling line in setup()");
-// }
-
 bool init_radio()
 {
-    // client_address = IdGuard.readId();
     driver.setTxPower(TRANSMIT_POWER);
     driver.init();
     return manager.init();
