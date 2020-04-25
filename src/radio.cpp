@@ -1,8 +1,8 @@
 #include <RHReliableDatagram.h>
 #include <RH_RF95.h>
 
-#include "radio.h"
 #include "config.h"
+#include "radio.h"
 
 // feather32u4 LoRa pin assignments
 #define RFM95_CS 8
@@ -15,8 +15,6 @@
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
 RHReliableDatagram manager(driver, CFG_LOCATION);
-
-void set_device_id(int device_id);
 
 // Dont put this on the stack:
 uint8_t ok[3] = "OK";
