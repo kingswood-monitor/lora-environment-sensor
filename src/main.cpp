@@ -33,9 +33,9 @@ uint8_t packet_buffer[255];
 
 void loop()
 {
+  int sleepMS = Watchdog.sleep(CFG_REFRESH_SECONDS * 1000);
+  // delay(CFG_REFRESH_SECONDS * 1000);
+
   uint8_t bytes_written = read_and_encode_sensors(packet_id++, packet_buffer, 255);
   send_measurement(packet_id, packet_buffer, bytes_written);
-
-  // delay(CFG_REFRESH_SECONDS * 1000);
-  int sleepMS = Watchdog.sleep(CFG_REFRESH_SECONDS * 1000);
 }
