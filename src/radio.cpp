@@ -12,6 +12,7 @@
 
 // LoRa server address
 #define SERVER_ADDRESS 0
+#define TRANSMIT_POWER 5 // valid levels +5 to +23
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
 RHReliableDatagram manager(driver, CFG_LOCATION);
@@ -33,8 +34,8 @@ uint8_t ok_len = 3;
 bool init_radio()
 {
     // client_address = IdGuard.readId();
-    Serial.print("Client ID: ");
-    // Serial.println(client_address);
+    driver.setTxPower(TRANSMIT_POWER);
+    driver.init();
     return manager.init();
 }
 
@@ -76,6 +77,9 @@ bool send_measurement(uint16_t packet_id, uint8_t *buffer, uint8_t bytes)
         {
             Serial.println((char *)ok);
             digitalWrite(LED_BUILTIN, LOW);
+
+            driver.sleep();
+
             return true;
         }
         else
