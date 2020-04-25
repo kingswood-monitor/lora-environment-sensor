@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 bool init_radio();
 bool has_radio();
 int16_t rssi();

@@ -1,7 +1,8 @@
 #include "packet.pb.h"
 
 // Device location
-#define CFG_LOCATION Location_outdoor
+// #define CFG_LOCATION Location_outdoor
+#define CFG_LOCATION Location_greenhouse
 
 // Data refresh rate (milliseconds)
 #define CFG_REFRESH_MILLIS 1000 // sensor refresh rate (milliseconds)

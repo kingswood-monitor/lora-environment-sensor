@@ -1,8 +1,6 @@
 #include <Arduino.h>
 
-#include "IdGuard.h"
 #include "config.h"
-#include "util.h"
 
 bool init_device()
 {
