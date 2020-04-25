@@ -32,7 +32,7 @@ uint8_t packet_buffer[255];
 
 void loop()
 {
-  uint8_t bytes_written = build_packet(packet_id++, packet_buffer, 255);
+  uint8_t bytes_written = read_and_encode_sensors(packet_id++, packet_buffer, 255);
   send_packet(packet_id, packet_buffer, bytes_written, SERVER_ADDRESS);
 
   delay(REFRESH_MILLIS);
