@@ -6,12 +6,9 @@
 // Device location
 #define CFG_LOCATION Location_greenhouse
 // Data refresh rate (milliseconds)
-#define REFRESH_MILLIS 1000 // sensor refresh rate (milliseconds)
+#define CFG_REFRESH_MILLIS 1000 // sensor refresh rate (milliseconds)
 
 /*********************************************************************/
-
-// LoRa server address
-#define SERVER_ADDRESS 0
 
 // Sensor type
 #define SENSOR_TYPE SensorType_environment
