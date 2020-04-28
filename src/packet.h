@@ -1,0 +1,6 @@
+#include "packet.pb.h"
+
+#define MAX_PROTOBUF_BYTES 100
+
+bool init_sensors();
+uint8_t build_packet(int packet_id, uint8_t *buffer, uint8_t buffer_size);
