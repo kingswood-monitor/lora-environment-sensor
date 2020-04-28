@@ -70,6 +70,11 @@ bool init_hdc1080()
 bool init_veml7700()
 {
     veml.begin();
+    // default intergation time of 100ms results in reading clipped to 2126.52
+    // 50ms / Gain 1/8 seems to be 60klux max, for direct sunlight of 50k
+    veml.setIntegrationTime(VEML7700::als_itime_t::ALS_INTEGRATION_50ms);
+    veml.setGain(VEML7700::als_gain_t::ALS_GAIN_d8);
+
     float lux;
     return !veml.getALSLux(lux);
 }
@@ -144,10 +149,15 @@ bool encode_measurements(pb_ostream_t *ostream, const pb_field_iter_t *field, vo
     {
         measurement.sensor = Sensor_VEML7700;
 
-        float lux;
-        veml.getALSLux(lux);
+        float raw, lux;
+        veml.getALSLux(raw);
+        lux = raw * 0.9216; // 50ms / Gain 1/8
+        Serial.print(raw);
+        Serial.print(lux);
+
         measurement.which_type = Measurement_light_tag;
         measurement.type.light = lux;
+
         if (!encode_field(&measurement, ostream, field))
             return false;
     }
