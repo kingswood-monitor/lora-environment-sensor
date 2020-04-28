@@ -11,7 +11,7 @@
 
 // LoRa server address
 #define SERVER_ADDRESS 0
-#define TRANSMIT_POWER 5 // valid levels +5 to +23
+#define TRANSMIT_POWER 10 // valid levels +5 to +23
 
 RH_RF95 driver(RFM95_CS, RFM95_INT);
 RHReliableDatagram manager(driver, CFG_LOCATION);
